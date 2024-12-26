@@ -1,0 +1,8 @@
+github.com/dvcrn/moneyforward-go v0.0.0-20241225144809-6009d7a6d97a h1:5bx2bDTfjFFZQqFWszd+Vy+Th9qOAu2CaxvQTWE0+lY=
+github.com/dvcrn/moneyforward-go v0.0.0-20241225144809-6009d7a6d97a/go.mod h1:Lyg3/WrR+EbIKArGKyq9czEPICB17hJyouZdYtTvccI=
+github.com/dvcrn/moneyforward-go v0.0.0-20241226020740-d82b22c5cecb h1:2uJT0qzyKdLEiDZ1kXmIaLipwbZVWfktUsHsC/8+dnM=
+github.com/dvcrn/moneyforward-go v0.0.0-20241226020740-d82b22c5cecb/go.mod h1:Lyg3/WrR+EbIKArGKyq9czEPICB17hJyouZdYtTvccI=
+github.com/dvcrn/pocketsmith-go v0.0.0-20241213060714-89b97a49580f h1:Trmx/7H3wLC//GHg7CmdZ29UZ0msNe8xuhpYeLJzJKs=
+github.com/dvcrn/pocketsmith-go v0.0.0-20241213060714-89b97a49580f/go.mod h1:rRx2gtJK+78Po3CCQzaZzfb7rcNSxhq4r3xz7Cj9U8M=
+github.com/dvcrn/romajiconv v0.0.0-20241213072709-a51aa4b3f569 h1:dCODEB537llvB2u2EgClGkaoiPnGnd42Jp1LDQqiqak=
+github.com/dvcrn/romajiconv v0.0.0-20241213072709-a51aa4b3f569/go.mod h1:Spm4oRihWuuSf6znGoXTFPj3aafW1DRFWfSEDiPGsFE=
