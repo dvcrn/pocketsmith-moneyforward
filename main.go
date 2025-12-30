@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/dvcrn/pocketsmith-moneyforward/internal/mfmatch"
 	"github.com/dvcrn/pocketsmith-moneyforward/sanitizer"
 	"log"
 	"os"
@@ -38,8 +39,15 @@ func getConfig() *Config {
 	return config
 }
 
-func findOrCreateAccount(ps *pocketsmith.Client, userID int, institutionName string, accountName string, accountType moneyforward.AccountType, currency string) (*pocketsmith.Account, error) {
-	account, err := ps.FindAccountByName(userID, accountName)
+func findOrCreateAccount(ps *pocketsmith.Client, userID int, institutionName string, baseName string, legacyCandidates []string, accountType moneyforward.AccountType, currency string) (*pocketsmith.Account, error) {
+	displayName := mfmatch.BuildDisplayAccountName(institutionName, baseName)
+
+	accounts, err := ps.ListAccounts(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	account, err := mfmatch.FindMatchingAccount(accounts, institutionName, baseName, displayName, legacyCandidates)
 	if err != nil {
 		if err != pocketsmith.ErrNotFound {
 			return nil, err
@@ -81,13 +89,23 @@ func findOrCreateAccount(ps *pocketsmith.Client, userID int, institutionName str
 			psAccountType = pocketsmith.AccountTypeOtherAsset
 		}
 
-		fmt.Println("Would create account: ", institutionName, accountName)
-		account, err := ps.CreateAccount(userID, institution.ID, accountName, "jpy", psAccountType)
+		fmt.Println("Would create account: ", institutionName, displayName)
+		account, err := ps.CreateAccount(userID, institution.ID, displayName, "jpy", psAccountType)
 		if err != nil {
 			return nil, err
 		}
 
 		return account, nil
+	}
+
+	if account.Title != displayName {
+		fmt.Printf("Renaming Pocketsmith account: %q -> %q\n", account.Title, displayName)
+		updated, err := ps.UpdateAccount(account.ID, displayName, account.CurrencyCode, account.Type, account.IsNetWorth)
+		if err != nil {
+			fmt.Println("Error renaming account: ", err)
+		} else {
+			account = updated
+		}
 	}
 
 	return account, nil
@@ -138,6 +156,13 @@ func main() {
 		// 	continue
 		// }
 
+		emptySubNameCount := 0
+		for _, subAccount := range account.SubAccounts {
+			if strings.TrimSpace(subAccount.SubName) == "" {
+				emptySubNameCount++
+			}
+		}
+
 		for _, subAccount := range account.SubAccounts {
 			accDetail, err := mf.GetSubAccountDetail(account.AccountIDHash, subAccount.SubAccountIDHash)
 			if err != nil {
@@ -159,8 +184,11 @@ func main() {
 			now := time.Now()
 
 			institutionName := fmt.Sprintf("%s (MF)", account.Name)
-			accountName := fmt.Sprintf("%s - %s (%s)", account.Name, subAccount.SubName, subAccount.SubType)
-			psAccount, err := findOrCreateAccount(ps, currentUser.ID, institutionName, accountName, account.Type, currency)
+			baseName := mfmatch.BuildBaseName(subAccount.SubName, subAccount.SubType)
+			includeInstitution := len(account.SubAccounts) == 1 ||
+				(strings.TrimSpace(subAccount.SubName) == "" && emptySubNameCount == 1)
+			legacyCandidates := mfmatch.LegacyAccountCandidates(institutionName, subAccount.SubName, subAccount.SubType, includeInstitution)
+			psAccount, err := findOrCreateAccount(ps, currentUser.ID, institutionName, baseName, legacyCandidates, account.Type, currency)
 			if err != nil {
 				fmt.Printf("Error creating/finding account: %v\n", err)
 				return
