@@ -1,0 +1,22 @@
+[tools]
+go = "latest"
+
+[tasks.build]
+run = "go build ./..."
+description = "Build the module"
+
+[tasks.test]
+run = "go test ./..."
+description = "Run Go tests"
+
+[tasks.mf-test]
+run = "go run ./scripts/test-moneyforward.go"
+description = "Test MoneyForward connectivity (requires MONEYFORWARD_COOKIE)"
+
+[tasks.run]
+run = "go run ."
+description = "Run the CLI (requires env vars or flags)"
+
+[tasks.docker-build]
+run = "docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/dvcrn/pocketsmith-moneyforward:latest . --push"
+description = "Build and push the multi-arch Docker image to GHCR"

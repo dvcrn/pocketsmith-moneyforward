@@ -241,7 +241,7 @@ func main() {
 
 				// Create Pocketsmith transaction
 				mfidMemo := fmt.Sprintf("mfid=%s", tx.ID.String())
-				psTx := &pocketsmith.CreateTransaction{
+				psTx := &pocketsmith.Transaction{
 					Payee:        convertedPayee,
 					Amount:       tx.Amount,
 					Date:         tx.RecognizedAt.Format("2006-01-02"),
