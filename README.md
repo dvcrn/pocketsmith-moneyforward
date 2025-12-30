@@ -1,18 +1,40 @@
-# pocketsmith-moneyforward
+# Pocketsmith MoneyForward Sync
 
-CLI for syncing MoneyForward accounts into Pocketsmith.
+A tool to sync transactions from MoneyForward (Japan) to Pocketsmith.
 
-## Run locally
-- `MONEYFORWARD_COOKIE=... POCKETSMITH_TOKEN=... mise run run`
-- `mise run mf-test` to verify MoneyForward connectivity.
+## Features
 
-## Build
-- `mise run build` to compile the module.
+- Automatically syncs transactions from MoneyForward to Pocketsmith
+- Normalizes payees for consistency
+- Avoids duplicate transactions
 
-## Container image
-- Image: `ghcr.io/dvcrn/pocketsmith-moneyforward`
-- Example: `docker pull ghcr.io/dvcrn/pocketsmith-moneyforward:latest`
+## Setup
 
-## Docker publish
-- Use `mise run docker-build` to build and push to GHCR.
-- GitHub Actions only publishes when the workflow is manually triggered.
+### Required Environment Variables
+
+
+MONEYFORWARD_COOKIE=your_cookie
+POCKETSMITH_TOKEN=your_token
+
+
+### Command Line Flags
+
+Alternatively, you can provide credentials via command line flags:
+
+
+./pocketsmith-moneyforward -mf-cookie=xxx -pocketsmith-token=xxx
+
+### Run with docker (recommended)
+
+`docker run -e MONEYFORWARD_COOKIE=xxx -e POCKETSMITH_TOKEN=xxx ghcr.io/dvcrn/pocketsmith-moneyforward:latest`
+
+## Building
+
+
+go build ./...
+
+
+## Running
+
+
+./pocketsmith-moneyforward
