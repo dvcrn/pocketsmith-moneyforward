@@ -174,8 +174,19 @@ func main() {
 			fmt.Printf("\nAccount Detail: %+v\n", accDetail)
 
 			keys := make([]string, 0, len(accDetail.AccountDetail.UserAssetDets))
-			for k := range accDetail.AccountDetail.UserAssetDets {
+			for k, dets := range accDetail.AccountDetail.UserAssetDets {
+				if len(dets) == 0 {
+					continue
+				}
 				keys = append(keys, k)
+			}
+			// Map iteration order is random, so sort to keep the pick below deterministic
+			sort.Strings(keys)
+
+			// Empty sub accounts (zero balance, no holdings) carry no asset details
+			if len(keys) == 0 {
+				fmt.Printf("Skipping sub account %s (%s): no asset details\n", subAccount.SubName, subAccount.SubType)
+				continue
 			}
 
 			// Get earliest login date from account detail
